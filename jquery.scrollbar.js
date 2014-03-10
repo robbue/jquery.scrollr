@@ -132,11 +132,10 @@
         // Find height of content
         // Add this as a public method for updating the height after DOM changes
         // var intElemScrollHeight = document.getElementById(id_attribute_value).scrollHeight;
-        self.target.scrollrInner.children().each(function(){
-            //console.log(this);
-
-            self.totalHeight = self.totalHeight + $(this).outerHeight(true);
-        });
+        // self.target.scrollrInner.children().each(function(){
+        //     self.totalHeight = self.totalHeight + $(this).outerHeight(true);
+        // });
+        self.totalHeight = self.target.scrollrInner[0].scrollHeight;
 
         if ( self.settings.fade ) {
             self.target.scrollrBar.hide();
@@ -182,8 +181,21 @@
             area;
 
         // Drag handle
+       self.target.scrollrBar.on(self.mouseEvents[0], function(event) {
+   
+            self.eventTrigger();
+
+            self.scrollTop = (event.pageY / (self.scrollrInnerHeight + self.scrollrHandleHeight)) * (self.totalHeight);
+            console.log(self.scrollTop);
+
+            self.target.scrollrInner.scrollTop(self.scrollTop);
+         
+        });
+
         self.target.scrollrHandle.on(self.mouseEvents[0], function(event) {
             
+            event.stopPropagation();
+
             self.dragging = true;
 
             self.eventTrigger();
@@ -202,25 +214,7 @@
                 handle.y = parseInt(handle.y[5]);
             }
 
-            //var asd = self.target.scrollrHandle.css('transform');
-            console.log('scrollTop: ' + handle.y)
-
-            //handle.y = self.target.scrollrInner.scrollTop();
             start.y = event.pageY;
-
-            // currentPageY = e.pageY;
-            // currentTop = $scrollbarY.position().top;
-
-            //console.log(start.y)
-            //var asd = self.scrollrHandleHeight;
-            //self.scrollTop = (start.y / self.scrollrInnerHeight) * (self.scrollrInnerHeight - self.scrollrHandleHeight);
-            //self.scrollTop = (start.y / (self.scrollrInnerHeight + self.scrollrHandleHeight)) * (self.totalHeight);
-            //console.log(self.scrollTop);
-
-// Math.round((self.scrollTop / (self.totalHeight - self.scrollrInnerHeight)) * (self.scrollrInnerHeight - self.scrollrHandleHeight));
-
-            //self.target.scrollrInner.scrollTop(self.scrollTop);
-            //return false;
         });
 
         $(document).on(self.mouseEvents[1], function(event) {
@@ -489,118 +483,5 @@
             }
         });
     };
-
-    
-
-    /*
-// Make transform fallback to top for browsers that dosent support it
-    if ( !$.support.transform && !$.support.transform !== "transform" ) {
-        
-        $.cssHooks.transform = {
-            get: function( elem, computed, extra ) {
-                return $.css( elem, $.support.top );
-            },
-            set: function( elem, value) {
-                elem.style[ $.support.top ] = value;
-            }
-        };
-    }
-
-
-http://ricostacruz.com/jquery.transit/source/
-function checkTransform3dSupport() {
-        var support = {};
-        var div = document.createElement('div');
-
-        div.style[support.transform] = '';
-        div.style[support.transform] = 'rotateY(90deg)';
-        return div.style[support.transform] !== '';
-    }
-
-
-
-var supportsTouch = (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch);
-
-$(window).on('load resize', function() { self.refresh(); })
-        $('img').on('load', function() { self.refresh(); })
-        self.$node.scroll(function() { self.scrub(); })
-
-
-
-     NanoScroll.prototype.nativeScrolling = function() {
-      this.$content.css({
-        WebkitOverflowScrolling: 'touch'
-      });
-      this.iOSNativeScrolling = true;
-      this.isActive = true;
-    };
-
-
-    if (hasTransform) {
-        cssValue = {};
-        cssValue[transform] = "translate(0, " + this.sliderTop + "px)";
-      } else {
-        cssValue = {
-          top: this.sliderTop
-        };
-      }
-
-    // cssHook for CSS3 transform
-    $.cssHooks.transform = {
-        set: function(elem, value) {
-            var div = document.createElement('div'),
-                property = div.style.transform === '' ? 'transform' :
-            (div.style.WebkitTransform === '' ? 'WebkitTransform' :
-            (div.style.MozTransform === '' ? 'MozTransform' :
-            (div.style.MsTransform === '' ? 'MsTransform' :
-            (div.style.OTransform === '' ? 'OTransform' :
-            false))));
-            
-            if (property)
-                elem.style[property] = value;
-        }
-    };
-
-
-
-    $.fn[ pluginName ] = function ( options ) {
-
-        var options, instance;
-        if (!( this.data( dataPlugin ) instanceof Plugin )) {
-            //console.log(options);
-            this.data( dataPlugin, new Plugin( this, options ) );
-        }
-
-        // return this.each(function() {
-        //     console.log(options);
-        //     if (!( this.data( dataPlugin ) instanceof Plugin )) {
-        //     //if (!( this.data( dataPlugin ) instanceof Plugin )) {
-        //         //this.data( this, "plugin_" + pluginName, new Plugin( this, options ) );
-        //         this.data( dataPlugin, new Plugin( this, options ) );
-        //     }
-        // });
-
-        instance = this.data( dataPlugin );
-        instance.element = this;
-
-        return this.each(function() {
-            console.log(this)
-        });
-
-        if (typeof options === 'undefined' || typeof options === 'object') {
-
-            if ( typeof instance['init'] === 'function' ) {
-                console.log('first');
-                instance.init( options );
-            }
-        } else if ( typeof options === 'string' && typeof instance[options] === 'function' ) {
-            args = Array.prototype.slice.call( arguments, 1 );
-            console.log('second');
-            return instance[options].apply( instance, args );
-        } else {
-            console.log('erorr');
-            $.error('Method ' + options + ' does not exist on jQuery.' + pluginName);
-        }
-    };*/
 
 }(jQuery, window, document));
