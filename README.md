@@ -54,13 +54,7 @@ All A-grade browsers for desktop, touch devices is left untouches (read why unde
 	<script src="jquery.scrollr.js"></script>
 	```
 
-3. Create a img-tag:
-
-	```html
-	<article id="element"></article>
-	```
-
-4. Call the plugin:
+3. Apply the plugin to a element:
 
 	```javascript
 	$("#element").scrollr({
