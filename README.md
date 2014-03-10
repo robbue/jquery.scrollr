@@ -5,6 +5,7 @@ That means that it behaves like the user is used to, and dosen't try to normaliz
 
 [Click here for demo](http://robertbue.no/plugins/jquery.scrollr/)
 
+
 ## Why another scrollbar plugin?
 Users have different settings for mouse speed, differexnt mouse, browser and operating system. So making a scrolling behavior that is equally for all users is, in first place, hard, if not impossible, but more importantly it's not what the user is used to. The scrolling behavior should be the same as on all other sites the user interact with. 
 
@@ -13,9 +14,6 @@ https://medium.com/design-idea/7764db6a9987
 
 > "When you scrolljack you are taking the memory of how a customer’s (most of you call these people users) legs work. They mean to walk down the page, but instead they are interrupted and taken to a new place, and unexpected place."
 
-## What it does *-not-* do
-- Animates the scrolling content
-- Add scrollbars to touch devices (because users should be presented with scrollbars default behavior)
 
 ## Goals
 - **Behave like your default scrollbar**  
@@ -33,12 +31,20 @@ https://medium.com/design-idea/7764db6a9987
 - **Not to break anything**  
   *If JavaScript is turned of it will fallback to the default scrollbar*
 
+
+## What it does *-not-* do
+- Animates the scrolling content
+- Add scrollbars to touch devices (because users should be presented with scrollbars default behavior)
+
+
 ## Requirements
 jQuery 1.8.0 or higher
 css style position is needed on element
 
+
 ## Browser Support
 All A-grade browsers for desktop, touch devices is left untouches (read why under "What it does not do")
+
 
 # Usage
 
@@ -66,6 +72,7 @@ All A-grade browsers for desktop, touch devices is left untouches (read why unde
 	});
 	```
 
+
 ## Public Methods
 	
 Method 1: 
@@ -76,6 +83,7 @@ Method 1:
 # License
 
 This plugin is available under the [MIT license](http://opensource.org/licenses/mit-license.php).
+
 
 # Author
 
