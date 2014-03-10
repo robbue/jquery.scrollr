@@ -13,7 +13,7 @@ https://medium.com/design-idea/7764db6a9987
 
 > "When you scrolljack you are taking the memory of how a customer’s (most of you call these people users) legs work. They mean to walk down the page, but instead they are interrupted and taken to a new place, and unexpected place."
 
-## What it does *not* do
+## What it does *-not-* do
 - Animates the scrolling content
 - Add scrollbars to touch devices (because users should be presented with scrollbars default behavior)
 
