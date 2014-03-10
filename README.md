@@ -1,26 +1,21 @@
-# scollr
-because functionality before fancy  
-
 # Description
 A plugin that replaces the default scrollbars in the browser with CSS scrollbars, without removing its natural behavior.
 
 That means that it behaves like the user is used to, and dosen't try to normalize the scrolling for all users.
 
-[Click here for demo](http://robertbue.no/plugins/jquery.scollr/)
+[Click here for demo](http://robertbue.no/plugins/jquery.scrollr/)
 
-[Click here for demo (standalone)](http://robertbue.no/plugins/jquery.scollr/standalone.html)
-
-# Why?
+## Why?
 Users have different settings for mouse speed, differexnt mouse, browser and operating system. So making a scrolling behavior that is equally for all users is, in first place, hard, if not impossible, but more importantly it's not what the user is used to. The scrolling behavior should be the same as on all other sites the user interact with. 
 
 https://medium.com/design-idea/7764db6a9987
 "When you scrolljack you are taking the memory of how a customer’s (most of you call these people users) legs work. They mean to walk down the page, but instead they are interrupted and taken to a new place, and unexpected place."
 
-# What it does not do?
+## What it does not do
 - Animates the scrolling content
 - Add scrollbars to touch devices (because users should be presented with scrollbars default behavior)
 
-# Goal
+## Goals
 - Behave like your default scrollbar
 The scrolling speed you are used to and with the same functionality as your default scrollbar (except arrows, because they are just ugly)
 
@@ -36,14 +31,14 @@ All styling is done by CSS after scrollr-classes
 - Not to break anything
 If JavaScript is turned of it will fallback to the default scrollbras
 
-# Requirements
+## Requirements
 jQuery 1.8.0 or higher
 css style position is needed on element
 
-# Browser Support
+## Browser Support
 All A-grade browsers for desktop, touch devices is left untouches (read why under "What it does not do")
 
-## Usage
+# Usage
 
 1. Include jQuery:
 
@@ -82,10 +77,10 @@ Method 1:
 	$('#element').scrollr('someThing', value);
 
 
-## License
+# License
 
 This plugin is available under the [MIT license](http://opensource.org/licenses/mit-license.php).
 
-## Author
+# Author
 
 Made by [Robert Bue](http://robertbue.no)
