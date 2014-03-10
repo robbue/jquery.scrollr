@@ -191,8 +191,9 @@
 
         self.target.scrollrHandle.on(self.mouseEvents[0], function(event) {
             
+            event.preventDefault();
             event.stopPropagation();
-
+            
             self.dragging = true;
 
             self.eventTrigger();
