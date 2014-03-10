@@ -5,11 +5,12 @@ That means that it behaves like the user is used to, and dosen't try to normaliz
 
 [Click here for demo](http://robertbue.no/plugins/jquery.scrollr/)
 
-## Why?
+## Why another scrollbar plugin?
 Users have different settings for mouse speed, differexnt mouse, browser and operating system. So making a scrolling behavior that is equally for all users is, in first place, hard, if not impossible, but more importantly it's not what the user is used to. The scrolling behavior should be the same as on all other sites the user interact with. 
 
 **Good article on scroll hijacking**
 https://medium.com/design-idea/7764db6a9987
+
 > "When you scrolljack you are taking the memory of how a customer’s (most of you call these people users) legs work. They mean to walk down the page, but instead they are interrupted and taken to a new place, and unexpected place."
 
 ## What it does not do
@@ -18,19 +19,24 @@ https://medium.com/design-idea/7764db6a9987
 
 ## Goals
 - Behave like your default scrollbar
-The scrolling speed you are used to and with the same functionality as your default scrollbar (except arrows, because they are just ugly)
+
+*The scrolling speed you are used to and with the same functionality as your default scrollbar (except arrows, because they are just ugly)*
 
 - No need for changes in your existing markup
-scrollr only adds a extra div for the magic to happen. There should be no effect for the rest of your design/layout if scrollr is enabled or not
+
+*scrollr only adds a extra div for the magic to happen. There should be no effect for the rest of your design/layout if scrollr is enabled or not*
 
 - Fast and lightweight (xkB js and css)
-By using requestAnimationFrame (and not listning to scrollbar position) (fallbacks to setTimeout for older browsers) we have a optimized loop, and the whole plugin is written to it's basic, but still be powerfull by settings and options
+
+*By using requestAnimationFrame (and not listning to scrollbar position) (fallbacks to setTimeout for older browsers) we have a optimized loop, and the whole plugin is written to it's basic, but still be powerfull by settings and options*
 
 - Customizable
-All styling is done by CSS after scrollr-classes
+
+*All styling is done by CSS after scrollr-classes*
 
 - Not to break anything
-If JavaScript is turned of it will fallback to the default scrollbras
+
+*If JavaScript is turned of it will fallback to the default scrollbar*
 
 ## Requirements
 jQuery 1.8.0 or higher
