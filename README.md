@@ -19,19 +19,19 @@ https://medium.com/design-idea/7764db6a9987
 
 ## Goals
 - **Behave like your default scrollbar**
-⋅⋅*The scrolling speed you are used to and with the same functionality as your default scrollbar (except arrows, because they are just ugly)*
+  *The scrolling speed you are used to and with the same functionality as your default scrollbar (except arrows, because they are just ugly)*
 
--**No need for changes in your existing markup**
-⋅⋅*scrollr only adds a extra div for the magic to happen. There should be no effect for the rest of your design/layout if scrollr is enabled or not*
+- **No need for changes in your existing markup**
+  *scrollr only adds a extra div for the magic to happen. There should be no effect for the rest of your design/layout if scrollr is enabled or not*
 
 - **Fast and lightweight (xkB js and css)**
-⋅⋅*By using requestAnimationFrame (and not listning to scrollbar position) (fallbacks to setTimeout for older browsers) we have a optimized loop, and the whole plugin is written to it's basic, but still is powerfull by settings and options*
+  *By using requestAnimationFrame (and not listning to scrollbar position) (fallbacks to setTimeout for older browsers) we have a optimized loop, and the whole plugin is written to it's basic, but still is powerfull by settings and options*
 
 - **Customizable**
-⋅⋅*All styling is done by CSS after scrollr-classes*
+  *All styling is done by CSS after scrollr-classes*
 
 - **Not to break anything**
-⋅⋅*If JavaScript is turned of it will fallback to the default scrollbar*
+  *If JavaScript is turned of it will fallback to the default scrollbar*
 
 ## Requirements
 jQuery 1.8.0 or higher
