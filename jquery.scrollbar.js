@@ -158,9 +158,6 @@
             }
         }
 
-        self.transformProperty = "translate";
-
-
         this.update();
         this.scrollbarPosition();
     }
