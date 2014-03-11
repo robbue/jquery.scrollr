@@ -1,9 +1,9 @@
 /*
- 	scrollr standalone - v0.0.1 (doesn't use TweenMax or hammer.js)
- 	jQuery plugin for scrolling or dragging through an array of images
+ 	scrollr - v0.0.1 
+ 	A plugin that replaces the default scrollbars in the browser with CSS scrollbars, without removing its natural behavior.
 	by Robert Bue (@robert_bue)
 
- 	Dual licensed under MIT and GPL.
+ 	Licensed under MIT
  */
 
 ;(function ( $, window, document, undefined ) {
@@ -14,7 +14,8 @@
         // default options
         defaults = {
 			offset : 0,
-            fade : false,
+            fadeOnHover: true,
+            fadeOnActive: true,
             autoHandle: true,
             minHandleHeight: 35,
             maxHandleHeight: 9999999
@@ -23,7 +24,6 @@
     var Plugin = function ( element, options ) {
 
         this.element = element;
-        //console.log(element);
         this.settings = $.extend( {}, defaults, options );
         this._defaults = defaults;
         this._name = pluginName;
@@ -39,7 +39,7 @@
         self.targetWidth = self.target.width(),
         self.targetHeight = self.target.height(),
         self.ticker = 0,
-        self.scrollTop = 0,
+        self.scrollbarTop = 0,
         self.scrolling = false,
         self.totalHeight = 0;
         self.timer = null;
@@ -135,12 +135,19 @@
         // self.target.scrollrInner.children().each(function(){
         //     self.totalHeight = self.totalHeight + $(this).outerHeight(true);
         // });
-        self.totalHeight = self.target.scrollrInner[0].scrollHeight;
+        
 
-        if ( self.settings.fade ) {
+        if ( self.settings.fadeOnHover ) {    
+            self.target.addClass('scrollr-fade-hover');
             self.target.scrollrBar.hide();
-            self.target.addClass('scrollr-fade');
         }
+
+        if ( self.settings.fadeOnActive ) {    
+            self.target.addClass('scrollr-fade');
+            self.target.scrollrBar.hide();
+        }
+
+        
 
         // Checks if the browser support transform property
         // FIX THIS: IS EXECUTED EVERY TIME
@@ -174,77 +181,81 @@
 
         var mouse = {}, 
             start = {}, 
-            handle = {},
-            area;
+            handle = {};
 
-        // Drag handle
-       self.target.scrollrBar.on(self.mouseEvents[0], function(event) {
+        // Click scrollbar track
+        self.target.scrollrBar.on(self.mouseEvents[0], function(event) {
    
             self.eventTrigger();
 
-            self.scrollTop = (event.pageY / (self.scrollrInnerHeight + self.scrollrHandleHeight)) * (self.totalHeight);
-            console.log(self.scrollTop);
+            self.scrollbarTop = (event.pageY / (self.scrollrInnerHeight + self.scrollrHandleHeight)) * (self.totalHeight);
 
-            self.target.scrollrInner.scrollTop(self.scrollTop);
-         
+            self.target.scrollrInner.scrollTop(self.scrollbarTop);    
         });
 
-        self.target.scrollrHandle.on(self.mouseEvents[0], function(event) {
-            
-            event.preventDefault();
-            event.stopPropagation();
-            
+        // Select text
+        self.target.scrollrInner.on(self.mouseEvents[0], function(event) {
+   
+            //event.stopPropagation();
             self.dragging = true;
+            self.selectText = true;
+            self.scrollTop = self.target.scrollrInner.scrollTop();
 
             self.eventTrigger();
 
             self.handleDragging = setInterval(function() {
                 self.eventTrigger();
-            }, 100);
-
-            self.target.addClass('scrolling');
-
-            if ( self.transformProperty == "top" ) {
-                handle.y = parseInt(self.target.scrollrHandle.css('top'));
-            } else {
-                handle.y = self.target.scrollrHandle.css('transform');
-                handle.y = handle.y.match(/(-?[0-9\.]+)/g);
-                handle.y = parseInt(handle.y[5]);
-            }
-
-            start.y = event.pageY;
+            }, 400);
         });
 
-        $(document).on(self.mouseEvents[1], function(event) {
-   
-            if ( self.dragging ) {
+        // Drag handle
+        self.target.scrollrHandle.on(self.mouseEvents[0], function(event) {          
+            event.preventDefault();
+            event.stopPropagation();
+            
+            self.dragging = true;
+            self.scrollTop = self.target.scrollrInner.scrollTop();
+
+            self.eventTrigger();
+
+            self.handleDragging = setInterval(function() {
+                self.eventTrigger();
+            }, 400);
+
+            //self.target.addClass('scrolling');
+
+            handle.y = getHandlePosition('y', self);
+            start.y = event.pageY;
+            
+        });
+
+        $(document).on(self.mouseEvents[1], function(event) { 
+            if ( self.dragging && !self.selectText ) {
                 event.preventDefault();
 
                 mouse.moveX = event.pageX;
-                mouse.moveY = event.pageY - start.y;
-                
+                mouse.moveY = event.pageY - start.y;        
 
-                self.scrollbarTop = handle.y + mouse.moveY;
-
-                self.scrollTop = Math.round(self.scrollbarTop * (self.totalHeight - self.scrollrInnerHeight) / (self.scrollrInnerHeight - self.scrollrHandleHeight));
-
-                self.target.scrollrInner.scrollTop(self.scrollTop);
+                self.scrollTop = handle.y + mouse.moveY;
+                self.scrollTop = Math.round(self.scrollTop * (self.totalHeight - self.scrollrInnerHeight) / (self.scrollrInnerHeight - self.scrollrHandleHeight));  
             }
         });
 
         $(document).on(self.mouseEvents[2], function() {
-            //if (self.target.hasClass('scrolling')) {
             self.dragging = false;
+            self.selectText = false;
             clearInterval(self.handleDragging);
-            self.target.removeClass('scrolling');
-            //}
+            //self.target.removeClass('scrolling');
         });
 
-
-
-        $(window).on("resize", function(event) {
+        $(window).on("load resize", function(event) {
             self.update();
             console.log('reisze');
+        });
+
+        // Needed?
+        $('img').on('load', function() {
+            self.refresh();
         });
     }
 
@@ -254,8 +265,7 @@
 
         self.scrollrInnerHeight = self.target.scrollrInner.height();
         self.scrollrHandleHeight = self.target.scrollrHandle.height();
-        //console.log(self.totalHeight);
-        //console.log(self.scrollrInnerHeight);
+        self.totalHeight = self.target.scrollrInner[0].scrollHeight;
 
         // Set the height of the handle from the content height vs visible height ratio
         if ( self.settings.autoHandle ) {
@@ -268,31 +278,39 @@
         }
 
         if ( self.totalHeight < self.scrollrInnerHeight ) {
-            self.target.scrollrBar.hide();
+            //if ( self.settings.fadeOnHover ) { 
+                self.target.scrollrBar.hide();
+            //}
         } else {
-            self.target.scrollrBar.show();
+            //if ( !self.settings.fadeOnHover ) { 
+                self.target.scrollrBar.show();
+            //}
         }
     }
 
     Plugin.prototype.scrollbarPosition = function () {
         var self = this;
-        self.scrollLeft = self.target.scrollrInner.scrollLeft();
-        self.scrollTop = self.target.scrollrInner.scrollTop();
-        
-        //console.log(self.scrollrInnerHeight);      
-        //console.log(self.scrollTop);
 
-        self.scrollTop = Math.round((self.scrollTop / (self.totalHeight - self.scrollrInnerHeight)) * (self.scrollrInnerHeight - self.scrollrHandleHeight));
+        if ( self.dragging && !self.selectText  ) {
+            self.target.scrollrInner.scrollTop(self.scrollTop);
+            self.scrollbarTop = self.scrollTop;
+        } else {
+            self.scrollLeft = self.target.scrollrInner.scrollLeft();
+            self.scrollbarTop = self.target.scrollrInner.scrollTop();
+        }
+
+        self.scrollbarTop = Math.round((self.scrollbarTop / (self.totalHeight - self.scrollrInnerHeight)) * (self.scrollrInnerHeight - self.scrollrHandleHeight));
         
-        self.scrollTop = Math.min(self.scrollTop, (self.scrollrInnerHeight - self.scrollrHandleHeight));
-        self.scrollTop = Math.max(self.scrollTop, 0);
+        self.scrollbarTop = Math.min(self.scrollbarTop, (self.scrollrInnerHeight - self.scrollrHandleHeight));
+        self.scrollbarTop = Math.max(self.scrollbarTop, 0);
         
-        //element.target.scrollrHandle.css({"top": self.scrollTop});
-        //self.target.scrollrHandle.css({ transform: "translateY(" + self.scrollTop + "px)" });
+        //element.target.scrollrHandle.css({"top": self.scrollbarTop});
+        //self.target.scrollrHandle.css({ transform: "translateY(" + self.scrollbarTop + "px)" });
         self.target.scrollrHandle.css(
-            cssValues(0, self.scrollTop, self.transformProperty)
+            cssValues(0, self.scrollbarTop, self.transformProperty)
         );
 
+        
     }
 
     Plugin.prototype.eventTrigger = function () {
@@ -338,7 +356,7 @@
 
     Plugin.prototype.stop = function () {
         if ( self.dragging ) {
-            return; //is this needed?
+           return; //is this needed?
         }
 
         cancelAnimationFrame(this.ticker);
@@ -350,8 +368,21 @@
     Plugin.prototype.destroy = function () {
         this.element.data( dataPlugin, null );
     }
+ 
+    // Get the position of the handle
+    function getHandlePosition(axis, self) {
+        
+        if ( self.transformProperty == "top" ) {
+            handle = parseInt(self.target.scrollrHandle.css('top'));
+        } else {
+            handle = self.target.scrollrHandle.css('transform');
+            handle = handle.match(/(-?[0-9\.]+)/g);
+            handle = parseInt(handle[5]);
+        }
 
-    
+        return handle;
+    }
+
     // Formats css values
     function cssValues(x, y, property) {
         
