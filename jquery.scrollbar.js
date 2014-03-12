@@ -8,6 +8,8 @@
 
 ;(function ( $, window, document, undefined ) {
 
+    //"use strict";
+
     var pluginName = "scrollr",
         dataPlugin = "plugin_" + pluginName,
         
@@ -87,13 +89,9 @@
         // Add a scrollr class
         self.target.addClass('scrollr');
 
-
+        // Build markup
         self.target.wrapInner('<div class="scrollr-inner"></div>').append('<div class="scrollr-scrollbar scrollr-scrollbar-y"><div class="scrollr-handle"></div></div>');
 
-        // this.scrollbar = $(document.createElement('div')).addClass('lazybar-' + this.options.axis);
-        // this.scrubber = $(document.createElement('div')).addClass('scrubber').appendTo(this.scrollbar);
-
-        // Optimze this - $innner = createelement(div);
         self.target.scrollrInner = self.target.find('.scrollr-inner');
         self.target.scrollrBar = self.target.find('.scrollr-scrollbar-y');
         self.target.scrollrHandle = self.target.find('.scrollr-handle');
@@ -101,52 +99,92 @@
         // Set tabindex to 0 to allow keydown event
         self.target.scrollrInner.attr("tabindex", 0);
 
-
-
         // Get scrollbar width and sets padding
         // FIX THIS: DONT DO THIS EVERYTIME
-        var scrollBarWidth = getScrollbarWidth();
+        self.nativeScrollBarWidth = getScrollbarWidth();
+        self.target.scrollrBar.Width = self.target.scrollrBar.outerWidth(true);
+        //self.target.scrollrBar.Width = self.target.scrollrBar.width();
 
-        if ( scrollBarWidth === 0 ) {
-            //currentPadding = window.getComputedStyle(this.content, null).getPropertyValue('padding-right').replace(/\D+/g, '');
-            currentPadding = 0;
+        //self.target.scrollrBar.hide();
 
-            cssRule = {
-                right: -14,
-                paddingRight: +currentPadding + 14
-            };
-        }
+        // Get padding of element so we can add it to scrollr-inner
+        var padding = {
+            paddingTop: parseInt(self.target.css('paddingTop')),
+            paddingRight: parseInt(self.target.css('paddingRight')),
+            paddingBottom: parseInt(self.target.css('paddingBottom')),
+            paddingLeft: parseInt(self.target.css('paddingLeft'))
+        };
+        // Requires jQuery 1.9 - use this in the future?
+        // var padding = self.target.css([ "paddingTop", "paddingRight", "paddingBottom", "paddingLeft" ]);
 
-        //else if (BROWSER_SCROLLBAR_WIDTH) {
-        else {
-            cssRule = {
-                right: -scrollBarWidth
-            };
-        }
-
-        if (cssRule != null) {
-            //self.target.scrollrInner.css(cssRule);
-        }
-
-
-        // Find height of content
-        // Add this as a public method for updating the height after DOM changes
-        // var intElemScrollHeight = document.getElementById(id_attribute_value).scrollHeight;
-        // self.target.scrollrInner.children().each(function(){
-        //     self.totalHeight = self.totalHeight + $(this).outerHeight(true);
-        // });
         
+        // Remove paddding to element
+        // Because we will apply it to the scroll-inner instead
+        self.target.css({padding: 0});
+
+        // Native scrollbar dosent take any space - osx
+        if ( self.nativeScrollBarWidth === 0 ) {
+
+            // Setting: Scrollbar over content
+            if ( self.settings.overlayed ) {
+                innerCSSValues = {
+                    right: -(self.nativeScrollBarWidth + self.target.scrollrBar.Width),
+                    paddingRight: (self.nativeScrollBarWidth + self.target.scrollrBar.Width),
+                    paddingTop: padding.paddingTop,
+                    paddingBottom: padding.paddingBottom,
+                    paddingLeft: padding.paddingLeft
+                };
+            } else {
+                
+                innerCSSValues = {
+                    right: -(self.nativeScrollBarWidth + self.target.scrollrBar.Width),
+                    paddingRight: self.nativeScrollBarWidth + (self.target.scrollrBar.Width * 2),
+                    paddingTop: padding.paddingTop,
+                    paddingBottom: padding.paddingBottom,
+                    paddingLeft: padding.paddingLeft
+                };
+
+            }
+        }
+        else {
+    
+            // Setting: Scrollbar over content
+            if ( self.settings.overlayed ) {
+                innerCSSValues = {
+                    right: -(self.nativeScrollBarWidth + (self.target.scrollrBar.Width * 2)),
+                    paddingRight: (self.nativeScrollBarWidth + self.target.scrollrBar.Width),
+                    paddingTop: padding.paddingTop,
+                    paddingBottom: padding.paddingBottom,
+                    paddingLeft: padding.paddingLeft
+                };
+            } else {
+                innerCSSValues = {
+                    right: -(self.nativeScrollBarWidth),
+                    paddingRight: self.target.scrollrBar.Width,
+                    paddingTop: padding.paddingTop,
+                    paddingBottom: padding.paddingBottom,
+                    paddingLeft: padding.paddingLeft
+                };
+            }
+        }
+
+        // Sets padding-right after the scrollbar width
+        if (innerCSSValues != null) {
+            self.target.scrollrInner.css(innerCSSValues);
+        }
+
+        // Add classes from settings
+        if ( self.settings.overlayed ) {    
+            self.target.addClass('scrollr-overlayed');
+        }
 
         if ( self.settings.fadeOnHover ) {    
             self.target.addClass('scrollr-fade-hover');
-            self.target.scrollrBar.hide();
         }
 
         if ( self.settings.fadeOnActive ) {    
             self.target.addClass('scrollr-fade');
-            self.target.scrollrBar.hide();
         }
-
         
 
         // Checks if the browser support transform property
@@ -166,7 +204,6 @@
         }
 
         this.update();
-        this.scrollbarPosition();
     }
 
     Plugin.prototype.events = function () {
@@ -187,8 +224,11 @@
         self.target.scrollrBar.on(self.mouseEvents[0], function(event) {
    
             self.eventTrigger();
+            mouse.offsetTop = self.target.scrollrBar.offset().top;
+            mouse.toTop = event.pageY - mouse.offsetTop;
 
-            self.scrollbarTop = (event.pageY / (self.scrollrInnerHeight + self.scrollrHandleHeight)) * (self.totalHeight);
+            self.scrollbarTop = Math.round(((mouse.toTop) / (self.scrollrBarHeight + self.scrollrHandleHeight)) * (self.totalHeight));
+            //console.log(event.pageY);
 
             self.target.scrollrInner.scrollTop(self.scrollbarTop);    
         });
@@ -224,7 +264,9 @@
 
             //self.target.addClass('scrolling');
 
+            handle.x = getHandlePosition('x', self);
             handle.y = getHandlePosition('y', self);
+            start.x = event.pageX;
             start.y = event.pageY;
             
         });
@@ -233,11 +275,11 @@
             if ( self.dragging && !self.selectText ) {
                 event.preventDefault();
 
-                mouse.moveX = event.pageX;
+                mouse.moveX = event.pageX - start.x;
                 mouse.moveY = event.pageY - start.y;        
 
                 self.scrollTop = handle.y + mouse.moveY;
-                self.scrollTop = Math.round(self.scrollTop * (self.totalHeight - self.scrollrInnerHeight) / (self.scrollrInnerHeight - self.scrollrHandleHeight));  
+                self.scrollTop = Math.round(self.scrollTop * (self.totalHeight - self.scrollrInnerHeight) / (self.scrollrBarHeight - self.scrollrHandleHeight));
             }
         });
 
@@ -248,28 +290,32 @@
             //self.target.removeClass('scrolling');
         });
 
+        // Update on window load and resize
         $(window).on("load resize", function(event) {
             self.update();
             console.log('reisze');
         });
 
-        // Needed?
+        // Update when images load
         $('img').on('load', function() {
-            self.refresh();
+            self.update();
         });
     }
 
     Plugin.prototype.update = function () {
-
         var self = this;
 
-        self.scrollrInnerHeight = self.target.scrollrInner.height();
+        //self.scrollrInnerHeight = self.target.scrollrInner.height();
+        self.scrollrInnerHeight = self.target.scrollrInner.outerHeight(true);
+        self.scrollrBarHeight = self.target.scrollrBar.height();
         self.scrollrHandleHeight = self.target.scrollrHandle.height();
         self.totalHeight = self.target.scrollrInner[0].scrollHeight;
 
+        //console.log("self.scrollrInnerHeight: " + self.scrollrBarHeight);
+
         // Set the height of the handle from the content height vs visible height ratio
         if ( self.settings.autoHandle ) {
-            self.scrollrHandleHeight = Math.round((self.scrollrInnerHeight / self.totalHeight) * self.scrollrInnerHeight);
+            self.scrollrHandleHeight = Math.round((self.scrollrBarHeight / self.totalHeight) * self.scrollrBarHeight);
 
             self.scrollrHandleHeight = Math.min(self.scrollrHandleHeight, self.settings.maxHandleHeight);
             self.scrollrHandleHeight = Math.max(self.scrollrHandleHeight, self.settings.minHandleHeight);
@@ -286,6 +332,9 @@
                 self.target.scrollrBar.show();
             //}
         }
+
+
+        self.scrollbarPosition();
     }
 
     Plugin.prototype.scrollbarPosition = function () {
@@ -299,9 +348,9 @@
             self.scrollbarTop = self.target.scrollrInner.scrollTop();
         }
 
-        self.scrollbarTop = Math.round((self.scrollbarTop / (self.totalHeight - self.scrollrInnerHeight)) * (self.scrollrInnerHeight - self.scrollrHandleHeight));
+        self.scrollbarTop = Math.round((self.scrollbarTop / (self.totalHeight - self.scrollrInnerHeight)) * (self.scrollrBarHeight - self.scrollrHandleHeight));
         
-        self.scrollbarTop = Math.min(self.scrollbarTop, (self.scrollrInnerHeight - self.scrollrHandleHeight));
+        self.scrollbarTop = Math.min(self.scrollbarTop, (self.scrollrBarHeight - self.scrollrHandleHeight));
         self.scrollbarTop = Math.max(self.scrollbarTop, 0);
         
         //element.target.scrollrHandle.css({"top": self.scrollbarTop});
@@ -366,18 +415,28 @@
     }
 
     Plugin.prototype.destroy = function () {
+        // $this.unbind(eventClassName);
+        // $(window).unbind(eventClassName);
+        // $(document).unbind(eventClassName);
+        // $this.data('perfect-scrollbar', null);
+        // $this.data('perfect-scrollbar-update', null);
+        // $this.data('perfect-scrollbar-destroy', null);
+        // $scrollbarX.remove();
+        // $scrollbarY.remove();
+        // $scrollbarXRail.remove();
+        // $scrollbarYRail.remove();
         this.element.data( dataPlugin, null );
     }
  
     // Get the position of the handle
     function getHandlePosition(axis, self) {
-        
+        console.log(axis)
         if ( self.transformProperty == "top" ) {
-            handle = parseInt(self.target.scrollrHandle.css('top'));
+            handle = ( axis == "x" ) ? parseInt(self.target.scrollrHandle.css('left')) : parseInt(self.target.scrollrHandle.css('top'));
         } else {
             handle = self.target.scrollrHandle.css('transform');
             handle = handle.match(/(-?[0-9\.]+)/g);
-            handle = parseInt(handle[5]);
+            handle = ( axis == "x" ) ? parseInt(handle[2]) : parseInt(handle[5]);
         }
 
         return handle;
@@ -505,12 +564,18 @@
             };
     }());
 
-    $.fn[ pluginName ] = function ( options ) {
-        return this.each(function() {
-            if ( !$.data( this, "plugin_" + pluginName ) ) {
-                $.data( this, "plugin_" + pluginName, new Plugin( this, options ) );
+    $.fn[pluginName] = function (option) {
+        return this.each(function () {
+            var $this = $(this);
+            var data = $this.data(pluginName);
+            var options = typeof option == 'object' && option;
+            if (!data) {
+                $this.data(pluginName, (data = new Plugin(this, options)));
             }
-        });
-    };
+            if (typeof option == 'string') {
+                data[option]();
+            }
+        })
+    }
 
 }(jQuery, window, document));

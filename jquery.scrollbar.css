@@ -3,20 +3,42 @@
 	overflow: hidden;
 }
 
-	.scrollr-inner {
-		width: 100%;
-		height: 100%;
-		overflow: auto;
-		padding-right: 20px;
+.scrollr * {
+	-moz-box-sizing: content-box;
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
+}
 
-		-moz-box-sizing: content-box;
+	.scrollr-inner {
+		position: relative;
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		
+		/*width: 100%;
+		height: 100%;*/
+		overflow: auto;
+		outline: 0;
+		/*padding-right: 20px;*/
+
+		/*-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;*/
+	}
+
+	.scrollr-overlayed .scrollr-inner {
+		/*-moz-box-sizing: content-box;
 		-webkit-box-sizing: content-box;
-		box-sizing: content-box;
+		box-sizing: content-box;*/
+		/*width: 100%;  Is this right? */
 	}
 
 	.scrollr-scrollbar {
 		position: absolute;
-
+		display: none;
+		opacity: 0.5;
 		-webkit-transition: opacity 250ms ease-out;
 	    -moz-transition: opacity 250ms ease-out;
 	    transition: opacity 250ms ease-out;
@@ -25,16 +47,17 @@
 	.scrollr-scrollbar-y {
 		right: 0;
 		top: 0;
+		bottom: 0;
 
-		width: 5px;
-		height: 100%;
+		width: 15px;
+		/*height: 100%;*/
 	}
 
 	.scrollr-scrollbar-x {
 		left: 0;
 		bottom: 0;
 
-		width: 5px;
+		width: 15px;
 		height: 100%;
 	}
 
@@ -48,10 +71,20 @@
 		opacity: 1;
 	}
 
+	/*
+	Dosent work when scrolling
+	.scrollr:active .scrollr-scrollbar {
+		opacity: 1;
+	}*/
+
 		.scrollr-handle {
 			position: absolute;
 			width: 100%;
 			height: 50px;
 
 			cursor: pointer; /* Not standard, on windows maybe? */
+
+			-webkit-transition: height 250ms ease-out;
+	    	-moz-transition: height 250ms ease-out;
+	    	transition: height 250ms ease-out;
 		}
