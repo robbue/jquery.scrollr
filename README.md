@@ -1,3 +1,5 @@
+**WARNING: This repo is archived for the obvious reasons and you really should not use it. It only here because of nostalgia**
+
 # jQuery scrollr
 A plugin that replaces the default scrollbars in the browser with CSS scrollbars, without removing its natural behavior.
 
